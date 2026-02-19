@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="get-sales-sub-flow" doc:id="7e88782b-ee77-463a-9567-6676d2efb75e" >
+		<logger level="INFO" doc:name="Before Retrieve Sales Details HTTP Request" doc:id="ee507ab6-80e4-448e-bfd8-5d54619cf8a7" message='#[output application/json&#10;---&#10;{&#10;	message: "Before Retrieve Sales Details HTTP Request",&#10;	correlationId: vars.correlationId,&#10;	appName: vars.appName,&#10;	data: {&#10;		transactionId: vars.transactionId&#10;	}&#10;}]' />
+		<http:request doc:name="Retrieve Sales Details HTTP Request" doc:id="c38f7159-92c4-443e-8ac1-94ab7d14997d" config-ref="Sales_Process_API_HTTP_Request_Config" path="${prc-sales-api.http.path.retrieveSales}" sendCorrelationId="ALWAYS" correlationId="#[vars.correlationId]" >
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	transactionId : vars.transactionId default ""
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="After Retrieve Sales Details HTTP Request" doc:id="e05047f0-2536-433d-8f28-73942f534dd6" message='#[output application/json&#10;---&#10;{&#10;	message: "After Retrieve Sales Details HTTP Request",&#10;	correlationId: vars.correlationId,&#10;	appName: vars.appName,&#10;	data: {&#10;		transactionId: vars.transactionId&#10;	}&#10;}]' />
+		<ee:transform doc:name="Set JSON Response Payload" doc:id="40694a12-976f-4214-b0c5-2637868f007a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>

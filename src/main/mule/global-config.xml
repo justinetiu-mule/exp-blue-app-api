@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<http:listener-config name="exp-blue-app-api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${http.port}" readTimeout="${http.timeout}"/>
+    </http:listener-config>
+    <apikit:config name="exp-blue-app-api-config" api="resource::3c38628b-6c49-4cdb-988a-080399b4f1c9:exp-blue-app-api:1.0.0:raml:zip:exp-blue-app-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="b0c0a2e5-e02e-45b1-921d-c250fef6328b" file="properties/${env}-properties.yaml" key="${encryption.key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="31677963-93e9-4718-90b1-a93510edec05" file="properties/${env}-properties.yaml" />
+	<configuration doc:name="Configuration" doc:id="d433c1ce-89c7-4fa7-872d-a99e3ee26f00" defaultErrorHandler-ref="global-error-handler" />
+	<http:request-config name="Sales_Process_API_HTTP_Request_Config" doc:name="HTTP Request config" doc:id="b966df7b-d649-498d-8d69-b9f88897ba05" requestStreamingMode="ALWAYS" basePath="${prc-sales-api.http.path.base}" sendCorrelationId="ALWAYS" responseTimeout="${prc-sales-api.http.timeout}">
+		<http:request-connection host="${prc-sales-api.http.host}" port="${prc-sales-api.http.port}" connectionIdleTimeout="${prc-sales-api.http.connectionIdleTimeout}" />
+		<http:default-headers >
+			<http:default-header key="client_id" value="${secure::prc-sales-api.http.clientId}" />
+			<http:default-header key="client_secret" value="${secure::prc-sales-api.http.clientSecret}" />
+		</http:default-headers>
+	</http:request-config>
+
+</mule>

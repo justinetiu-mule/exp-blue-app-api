@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="global-error-handler" doc:id="30c63eea-9626-4e84-98f7-cbd197cdbef1" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="53f8bea5-d66c-4a2b-8e41-9e5906cff116" type="APIKIT:BAD_REQUEST,HTTP:BAD_REQUEST" >
+			<ee:transform doc:name="Build Error Message" doc:id="81efdac5-e58c-4d0a-bb0f-f019d4f07a4b" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	code: 400,
+	message: error.errorMessage.payload.message default error.description,
+	correlationId: vars.correlationId default correlationId
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Log Error Message" doc:id="02cd2159-5f3a-4cf9-889e-b8e5d2454b50" message='#[output application/json&#10;---&#10;{&#10;	message: "Log Error Message",&#10;	correlationId: vars.correlationId,&#10;	data: {&#10;		error: payload&#10;	}&#10;}]' />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="755f6992-6332-4a98-931a-e16910938d23" type="APIKIT:NOT_FOUND,HTTP:NOT_FOUND" >
+			<ee:transform doc:name="Build Error Message" doc:id="2647960d-2453-4665-8215-06386efbba28" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	code: 404,
+	message: error.errorMessage.payload.message default error.description,
+	correlationId: vars.correlationId default correlationId
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Log Error Message" doc:id="c29acf4b-30ce-4d4a-a283-3209c50095b6" message='#[output application/json&#10;---&#10;{&#10;	message: "Log Error Message",&#10;	correlationId: vars.correlationId,&#10;	data: {&#10;		error: payload&#10;	}&#10;}]' />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="318b6dc6-a730-45d4-9b75-0a5a964de5e6" type="APIKIT:METHOD_NOT_ALLOWED,HTTP:METHOD_NOT_ALLOWED" >
+			<ee:transform doc:name="Build Error Message" doc:id="3d272b13-8a77-4065-a41f-163cd88f5271" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	code: 405,
+	message: error.errorMessage.payload.message default error.description,
+	correlationId: vars.correlationId default correlationId
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[405]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Log Error Message" doc:id="a148325a-07a0-4f51-9fe6-c3ee6e276a52" message='#[output application/json&#10;---&#10;{&#10;	message: "Log Error Message",&#10;	correlationId: vars.correlationId,&#10;	data: {&#10;		error: payload&#10;	}&#10;}]' />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9ae5c655-97db-4a3d-93fa-af4cde98e0fd" type="APIKIT:NOT_ACCEPTABLE,HTTP:NOT_ACCEPTABLE" >
+			<ee:transform doc:name="Build Error Message" doc:id="aafe1ac3-4183-46f2-bfe1-93eca7891e23" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	code: 406,
+	message: error.errorMessage.payload.message default error.description,
+	correlationId: vars.correlationId default correlationId
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[406]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Log Error Message" doc:id="0d597f51-eb2a-4be5-9819-96b1bd96d24a" message='#[output application/json&#10;---&#10;{&#10;	message: "Log Error Message",&#10;	correlationId: vars.correlationId,&#10;	data: {&#10;		error: payload&#10;	}&#10;}]' />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="d3b34094-574f-44e8-af0f-6c18eb1c4789" type="APIKIT:UNSUPPORTED_MEDIA_TYPE,HTTP:UNSUPPORTED_MEDIA_TYPE" >
+			<ee:transform doc:name="Build Error Message" doc:id="e1770aba-a88f-410f-af1c-c28afbb1756d" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	code: 415,
+	message: error.errorMessage.payload.message default error.description,
+	correlationId: vars.correlationId default correlationId
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[415]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Log Error Message" doc:id="e685892c-277d-4c74-a151-003f38261303" message='#[output application/json&#10;---&#10;{&#10;	message: "Log Error Message",&#10;	correlationId: vars.correlationId,&#10;	data: {&#10;		error: payload&#10;	}&#10;}]' />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a27ad2d4-2a4b-44b6-bf8b-b9fbb64668f6" type="APIKIT:NOT_IMPLEMENTED" >
+			<ee:transform doc:name="Build Error Message" doc:id="4aa29cd8-0b90-45dd-8796-8c2b3d8429ba" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	code: 501,
+	message: error.errorMessage.payload.message default error.description,
+	correlationId: vars.correlationId default correlationId
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[501]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Log Error Message" doc:id="64d2acee-6c34-494f-9e56-5f3f35ced665" message='#[output application/json&#10;---&#10;{&#10;	message: "Log Error Message",&#10;	correlationId: vars.correlationId,&#10;	data: {&#10;		error: payload&#10;	}&#10;}]' />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7a6855e1-fbb3-471d-be9a-eba9a5d371ce" type="ANY" >
+			<ee:transform doc:name="Build Error Message" doc:id="9e49ad34-d1ae-4919-a6ed-de820650d678" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	code: 500,
+	message: error.errorMessage.payload.message default error.description,
+	correlationId: vars.correlationId default correlationId
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Log Error Message" doc:id="77c1d4f1-ea1d-43b2-8239-413b17781882" message='#[output application/json&#10;---&#10;{&#10;	message: "Log Error Message",&#10;	correlationId: vars.correlationId,&#10;	data: {&#10;		error: payload&#10;	}&#10;}]' />
+		</on-error-propagate>
+	</error-handler>
+</mule>

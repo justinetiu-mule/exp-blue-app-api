@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <flow name="exp-blue-app-api-main">
+        <http:listener config-ref="exp-blue-app-api-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <ee:transform doc:name="Set correlationId and appName Variable" doc:id="769b8d5a-fe08-4db5-9e0d-1682e15eaf2c">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="correlationId"><![CDATA[%dw 2.0
+output application/java
+---
+correlationId]]></ee:set-variable>
+				<ee:set-variable variableName="appName"><![CDATA[%dw 2.0
+output application/java
+---
+Mule::p("app.name")]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<apikit:router config-ref="exp-blue-app-api-config" />
+    </flow>
+    <!-- <flow name="exp-blue-app-api-console">
+        <http:listener config-ref="exp-blue-app-api-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="exp-blue-app-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-&#45;&#45;
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow> -->
+    <flow name="get:\sales\(transactionId):exp-blue-app-api-config">
+		<ee:transform doc:name="Set transactionId Variable" doc:id="09c15646-2799-4a22-826f-911afdf59bd1" >
+			<ee:variables >
+				<ee:set-variable variableName="transactionId" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.uriParams.transactionId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Start of Retrieve Sales Details Flow" doc:id="1c55ac57-f462-4eb9-be95-0395b05d6fad" message='#[output application/json&#10;---&#10;{&#10;	message: "Start of Retrieve Sales Details Flow",&#10;	correlationId: vars.correlationId,&#10;	appName: vars.appName,&#10;	data: {&#10;		transactionId: vars.transactionId&#10;	}&#10;}]' />
+		<flow-ref doc:name="get-sales-sub-flow" doc:id="604f8916-0d6e-4d56-abfa-f44d96af35aa" name="get-sales-sub-flow"/>
+		<logger level="INFO" doc:name="End of Retrieve Sales Details Flow" doc:id="a14625bd-dec2-4052-8fdd-425139938d9c" message='#[output application/json&#10;---&#10;{&#10;	message: "End of Retrieve Sales Details Flow",&#10;	correlationId: vars.correlationId,&#10;	appName: vars.appName,&#10;	data: {&#10;		transactionId: vars.transactionId&#10;	}&#10;}]' />
+    </flow>
+    <flow name="post:\sales:application\json:exp-blue-app-api-config">
+		<ee:transform doc:name="Set transactionId and requestPayload Variables" doc:id="45434414-6fab-444e-b9fe-5ebafd5cee49" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="requestPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+				<ee:set-variable variableName="transactionId" ><![CDATA[%dw 2.0
+output application/java
+---
+payload.transactionId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Start of Create Sales Flow" doc:id="a136824e-8b99-41a5-bf28-922180fc967a" message='#[output application/json&#10;---&#10;{&#10;	message: "Start of Create Sales Flow",&#10;	correlationId: vars.correlationId,&#10;	appName: vars.appName,&#10;	data: {&#10;		transactionId: vars.transactionId&#10;	}&#10;}]' />
+		<flow-ref doc:name="post-sales-sub-flow" doc:id="414d8a90-3f31-44b1-9845-609e13caf331" name="post-sales-sub-flow"/>
+		<logger level="INFO" doc:name="End of Create Sales Flow" doc:id="4e08c7b0-d89a-462e-9ab7-bffdb54f513e" message='#[output application/json&#10;---&#10;{&#10;	message: "End of Create Sales Flow",&#10;	correlationId: vars.correlationId,&#10;	appName: vars.appName,&#10;	data: {&#10;		transactionId: vars.transactionId&#10;	}&#10;}]' />
+    </flow>
+</mule>
