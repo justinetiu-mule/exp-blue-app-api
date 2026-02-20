@@ -76,7 +76,7 @@ payload]]></ee:set-variable>
 				<ee:set-variable variableName="transactionId" ><![CDATA[%dw 2.0
 output application/java
 ---
-payload.transactionId]]></ee:set-variable>
+payload.salesId]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<logger level="INFO" doc:name="Start of Create Sales Flow" doc:id="a136824e-8b99-41a5-bf28-922180fc967a" message='#[output application/json&#10;---&#10;{&#10;	message: "Start of Create Sales Flow",&#10;	correlationId: vars.correlationId,&#10;	appName: vars.appName,&#10;	data: {&#10;		transactionId: vars.transactionId&#10;	}&#10;}]' />
